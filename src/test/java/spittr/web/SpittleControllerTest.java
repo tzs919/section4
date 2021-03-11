@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.web.servlet.view.InternalResourceView;
 
 import spittr.Spittle;
@@ -19,7 +20,7 @@ import spittr.data.SpittleRepository;
 public class SpittleControllerTest {
 
   @Test
-  public void houldShowRecentSpittles() throws Exception {
+  public void shouldShowRecentSpittles() throws Exception {
     List<Spittle> expectedSpittles = createSpittleList(20);
     SpittleRepository mockRepository = mock(SpittleRepository.class);
     when(mockRepository.findSpittles(Long.MAX_VALUE, 20))
@@ -34,7 +35,9 @@ public class SpittleControllerTest {
        .andExpect(view().name("spittles"))
        .andExpect(model().attributeExists("spittleList"))
        .andExpect(model().attribute("spittleList", 
-                  hasItems(expectedSpittles.toArray())));
+                  hasItems(expectedSpittles.toArray())))
+//            .andDo(MockMvcResultHandlers.print())
+    ;
   }
 
   @Test
@@ -83,12 +86,12 @@ public class SpittleControllerTest {
            .param("latitude", "28.4159649")
            )
            .andExpect(redirectedUrl("/spittles"));
-    
+
     verify(mockRepository, atLeastOnce()).save(new Spittle(null, "Hello World", new Date(), -81.5811668, 28.4159649));
   }
   
   private List<Spittle> createSpittleList(int count) {
-    List<Spittle> spittles = new ArrayList<Spittle>();
+    List<Spittle> spittles = new ArrayList<>();
     for (int i=0; i < count; i++) {
       spittles.add(new Spittle("Spittle " + i, new Date()));
     }
